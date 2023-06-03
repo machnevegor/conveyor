@@ -153,10 +153,7 @@ export class Conveyor<InletValue, OutletValue, Context = void>
 
         switch (event.type) {
           case BeltType.INLET: {
-            const result = await this.handler(
-              event.value,
-              event.context,
-            );
+            const result = await this.handler(event.value, event.context);
 
             if (isAsyncIterable<OutletValue>(result)) {
               this.addOutletBelt(result);
