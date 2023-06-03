@@ -28,4 +28,4 @@ export type PromiseOrValue<T> = Promise<T> | T;
 export type Handler<InletValue, OutletValue, Context = void> = (
   value: InletValue,
   context: Context,
-) => PromiseOrValue<OutletValue | AsyncIterable<OutletValue>>;
+) => PromiseOrValue<AsyncIterable<OutletValue> | OutletValue>;
