@@ -2,6 +2,7 @@ import { Conveyor } from "../mod.ts";
 import { assertEquals, assertRejects } from "./deps.ts";
 
 // Handlers for testing
+
 const pow = (value: number, power: number) => value ** power;
 
 async function* ipow(value: number, power: number) {
@@ -13,6 +14,7 @@ const square = (value: number) => pow(value, 2);
 const isquare = (value: number) => ipow(value, 2);
 
 // Generators for testing
+
 async function* gen123() {
   yield 1;
   yield 2;
@@ -30,6 +32,8 @@ async function* genThrows() {
 
   throw new Error("Something went wrong!");
 }
+
+// Handler tests
 
 Deno.test(
   "[Conveyor] Handler returns value (without Context)",
@@ -204,6 +208,8 @@ Deno.test(
     assertEquals(values, new Set());
   },
 );
+
+// Belt tests
 
 Deno.test(
   "[Conveyor] Inlet belt throws error",
