@@ -5,7 +5,7 @@ import { BeltType } from "./types.ts";
 
 /**
  * The {@link Conveyor} class handles multiple asynchronous iterators and
- * multiplexes their values (asynchronous iterators or values) into a single
+ * multiplexes the returned asynchronous iterators (or values) into a single
  * stream. It currently makes an assumption that the final result (the value
  * returned and not yielded from both the inlet and outlet iterator) does not
  * matter; if there is any result, it is discarded.
