@@ -11,37 +11,74 @@ import { BeltType } from "./types.ts";
  * matter; if there is any result, it is discarded.
  *
  * @example
- * ```typescript
+ * ```ts
+ * // Conveyor without context.
  * import { delay } from "https://deno.land/std@0.190.0/async/delay.ts";
  * import { Conveyor } from "https://deno.land/x/conveyor@0.1.0/mod.ts";
  *
- * async function* oscillator() {
- *   let i = 0;
+ * async function* gen123(): AsyncIterableIterator<number> {
+ *   yield 1;
+ *   yield 2;
+ *   yield 3;
+ * }
  *
- *   while (true) {
- *     yield i++;
+ * async function* gen456(): AsyncIterableIterator<number> {
+ *   yield 4;
+ *   yield 5;
+ *   yield 6;
+ * }
  *
- *     await delay(1000);
+ * async function* handler(value: number): AsyncIterableIterator<number> {
+ *   while (value) {
+ *     yield value--;
+ *
+ *     await delay(500);
  *   }
  * }
  *
- * async function* handler(value: number, context: string) {
- *   if (value % 3600) return;
+ * const conveyor = new Conveyor<number, number>(handler);
  *
- *   const reps = Math.floor(value / 3600) % 12 || 12;
+ * conveyor.add(gen123());
+ * conveyor.add(gen456());
  *
- *   for (let i = 0; i < reps; i++) {
- *     yield `${context} #${i + 1}`;
+ * for await (const value of conveyor) {
+ *   console.log(value);
+ * }
+ * ```
  *
- *     await delay(1000);
+ * @example
+ * ```ts
+ * // Conveyor with context.
+ * import { delay } from "https://deno.land/std@0.190.0/async/delay.ts";
+ * import { Conveyor } from "https://deno.land/x/conveyor@0.1.0/mod.ts";
+ *
+ * async function* gen123(): AsyncIterableIterator<number> {
+ *   yield 1;
+ *   yield 2;
+ *   yield 3;
+ * }
+ *
+ * async function* gen456(): AsyncIterableIterator<number> {
+ *   yield 4;
+ *   yield 5;
+ *   yield 6;
+ * }
+ *
+ * async function* handler(
+ *   value: number,
+ *   context: number,
+ * ): AsyncIterableIterator<number> {
+ *   for (let i = 0; i < context; i++) {
+ *     yield value;
+ *
+ *     await delay(500);
  *   }
  * }
  *
- * const conveyor = new Conveyor<number, string, string>(handler);
+ * const conveyor = new Conveyor<number, number, number>(handler);
  *
- * conveyor.addInletBelt(oscillator(), "Cuckoo!");
- * conveyor.addInletBelt(oscillator(), "Ding-dong!");
- * conveyor.addInletBelt(oscillator(), "Bing-bong!");
+ * conveyor.add(gen123(), 4);
+ * conveyor.add(gen456(), 2);
  *
  * for await (const value of conveyor) {
  *   console.log(value);
@@ -71,19 +108,23 @@ export class Conveyor<InletValue, OutletValue, Context = void>
     this.throws = [];
   }
 
-  public addInletBelt(
-    belt: AsyncIterable<InletValue>,
-    context: Context,
-  ): void {
-    this.iteratorCount++;
-
-    this.callInletNext(belt[Symbol.asyncIterator](), context);
+  public add(iterable: AsyncIterable<InletValue>, context: Context): void {
+    this.addInletBelt(iterable, context);
   }
 
-  public addOutletBelt(belt: AsyncIterable<OutletValue>): void {
-    this.iteratorCount++;
+  public addInletBelt(
+    iterable: AsyncIterable<InletValue>,
+    context: Context,
+  ): void {
+    ++this.iteratorCount;
 
-    this.callOutletNext(belt[Symbol.asyncIterator]());
+    this.callInletNext(iterable[Symbol.asyncIterator](), context);
+  }
+
+  public addOutletBelt(iterable: AsyncIterable<OutletValue>): void {
+    ++this.iteratorCount;
+
+    this.callOutletNext(iterable[Symbol.asyncIterator]());
   }
 
   [Symbol.asyncIterator](): AsyncIterator<OutletValue> {
@@ -98,7 +139,7 @@ export class Conveyor<InletValue, OutletValue, Context = void>
       const { value, done } = await iterator.next();
 
       if (done) {
-        this.iteratorCount--;
+        --this.iteratorCount;
       } else {
         const event: InletEvent<InletValue, Context> = {
           type: BeltType.INLET,
@@ -110,7 +151,7 @@ export class Conveyor<InletValue, OutletValue, Context = void>
         this.events.push(event);
       }
     } catch (error) {
-      this.iteratorCount--;
+      --this.iteratorCount;
 
       this.throws.push(error);
     }
@@ -125,7 +166,7 @@ export class Conveyor<InletValue, OutletValue, Context = void>
       const { value, done } = await iterator.next();
 
       if (done) {
-        this.iteratorCount--;
+        --this.iteratorCount;
       } else {
         const event: OutletEvent<OutletValue> = {
           type: BeltType.OUTLET,
@@ -136,7 +177,7 @@ export class Conveyor<InletValue, OutletValue, Context = void>
         this.events.push(event);
       }
     } catch (error) {
-      this.iteratorCount--;
+      --this.iteratorCount;
 
       this.throws.push(error);
     }

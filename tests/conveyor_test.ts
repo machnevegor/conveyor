@@ -3,31 +3,35 @@ import { assertEquals, assertRejects } from "./deps.ts";
 
 // Test handlers
 
-const pow = (value: number, power: number) => value ** power;
+const pow = (value: number, power: number): number => value ** power;
 
-async function* ipow(value: number, power: number) {
+async function* ipow(
+  value: number,
+  power: number,
+): AsyncIterableIterator<number> {
   yield pow(value, power);
 }
 
-const square = (value: number) => pow(value, 2);
+const square = (value: number): number => pow(value, 2);
 
-const isquare = (value: number) => ipow(value, 2);
+const isquare = (value: number): AsyncIterableIterator<number> =>
+  ipow(value, 2);
 
 // Test belts
 
-async function* gen123() {
+async function* gen123(): AsyncIterableIterator<number> {
   yield 1;
   yield 2;
   yield 3;
 }
 
-async function* gen456() {
+async function* gen456(): AsyncIterableIterator<number> {
   yield 4;
   yield 5;
   yield 6;
 }
 
-async function* genThrows() {
+async function* genThrows(): AsyncIterableIterator<number> {
   yield 7;
 
   throw new Error("Something went wrong!");
@@ -40,8 +44,8 @@ Deno.test(
   async () => {
     const conveyor = new Conveyor<number, number>(square);
 
-    conveyor.addInletBelt(gen123());
-    conveyor.addInletBelt(gen456());
+    conveyor.add(gen123());
+    conveyor.add(gen456());
 
     const values = new Set();
     for await (const value of conveyor) {
@@ -59,8 +63,8 @@ Deno.test(
       (value) => new Promise((resolve) => resolve(square(value))),
     );
 
-    conveyor.addInletBelt(gen123());
-    conveyor.addInletBelt(gen456());
+    conveyor.add(gen123());
+    conveyor.add(gen456());
 
     const values = new Set();
     for await (const value of conveyor) {
@@ -76,8 +80,8 @@ Deno.test(
   async () => {
     const conveyor = new Conveyor<number, number>(isquare);
 
-    conveyor.addInletBelt(gen123());
-    conveyor.addInletBelt(gen456());
+    conveyor.add(gen123());
+    conveyor.add(gen456());
 
     const values = new Set();
     for await (const value of conveyor) {
@@ -95,8 +99,8 @@ Deno.test(
       (value) => new Promise((resolve) => resolve(isquare(value))),
     );
 
-    conveyor.addInletBelt(gen123());
-    conveyor.addInletBelt(gen456());
+    conveyor.add(gen123());
+    conveyor.add(gen456());
 
     const values = new Set();
     for await (const value of conveyor) {
@@ -112,8 +116,8 @@ Deno.test(
   async () => {
     const conveyor = new Conveyor<number, number, number>(pow);
 
-    conveyor.addInletBelt(gen123(), 2);
-    conveyor.addInletBelt(gen456(), 3);
+    conveyor.add(gen123(), 2);
+    conveyor.add(gen456(), 3);
 
     const values = new Set();
     for await (const value of conveyor) {
@@ -132,8 +136,8 @@ Deno.test(
         new Promise((resolve) => resolve(pow(value, context))),
     );
 
-    conveyor.addInletBelt(gen123(), 2);
-    conveyor.addInletBelt(gen456(), 3);
+    conveyor.add(gen123(), 2);
+    conveyor.add(gen456(), 3);
 
     const values = new Set();
     for await (const value of conveyor) {
@@ -149,8 +153,8 @@ Deno.test(
   async () => {
     const conveyor = new Conveyor<number, number, number>(ipow);
 
-    conveyor.addInletBelt(gen123(), 2);
-    conveyor.addInletBelt(gen456(), 3);
+    conveyor.add(gen123(), 2);
+    conveyor.add(gen456(), 3);
 
     const values = new Set();
     for await (const value of conveyor) {
@@ -169,8 +173,8 @@ Deno.test(
         new Promise((resolve) => resolve(ipow(value, context))),
     );
 
-    conveyor.addInletBelt(gen123(), 2);
-    conveyor.addInletBelt(gen456(), 3);
+    conveyor.add(gen123(), 2);
+    conveyor.add(gen456(), 3);
 
     const values = new Set();
     for await (const value of conveyor) {
@@ -190,8 +194,8 @@ Deno.test(
       },
     );
 
-    conveyor.addInletBelt(gen123());
-    conveyor.addInletBelt(gen456());
+    conveyor.add(gen123());
+    conveyor.add(gen456());
 
     const values = new Set();
 
@@ -216,8 +220,8 @@ Deno.test(
   async () => {
     const conveyor = new Conveyor<number, number>(square);
 
-    conveyor.addInletBelt(gen123());
-    conveyor.addInletBelt(gen456());
+    conveyor.add(gen123());
+    conveyor.add(gen456());
 
     conveyor.addInletBelt(genThrows());
 
@@ -242,8 +246,8 @@ Deno.test(
   async () => {
     const conveyor = new Conveyor<number, number>(square);
 
-    conveyor.addInletBelt(gen123());
-    conveyor.addInletBelt(gen456());
+    conveyor.add(gen123());
+    conveyor.add(gen456());
 
     conveyor.addOutletBelt(genThrows());
 
