@@ -1,3 +1,10 @@
+export type PromiseOrValue<T> = Promise<T> | T;
+
+export type Handler<InletValue, OutletValue, Context = void> = (
+  value: InletValue,
+  context: Context,
+) => PromiseOrValue<AsyncIterable<OutletValue> | OutletValue>;
+
 export enum BeltType {
   INLET = "inlet",
   OUTLET = "outlet",
@@ -22,10 +29,3 @@ export interface OutletEvent<OutletValue> extends BaseEvent<OutletValue> {
 export type Event<InletValue, OutletValue, Context = void> =
   | InletEvent<InletValue, Context>
   | OutletEvent<OutletValue>;
-
-export type PromiseOrValue<T> = Promise<T> | T;
-
-export type Handler<InletValue, OutletValue, Context = void> = (
-  value: InletValue,
-  context: Context,
-) => PromiseOrValue<AsyncIterable<OutletValue> | OutletValue>;

@@ -1,7 +1,7 @@
 import { Conveyor } from "../mod.ts";
 import { assertEquals, assertRejects } from "./deps.ts";
 
-// Handlers for testing
+// Test handlers
 
 const pow = (value: number, power: number) => value ** power;
 
@@ -13,7 +13,7 @@ const square = (value: number) => pow(value, 2);
 
 const isquare = (value: number) => ipow(value, 2);
 
-// Generators for testing
+// Test belts
 
 async function* gen123() {
   yield 1;
