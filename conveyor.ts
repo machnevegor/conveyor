@@ -12,7 +12,6 @@ import { BeltType } from "./types.ts";
  *
  * @example
  * ```ts
- * // Conveyor without context.
  * import { delay } from "https://deno.land/std@0.190.0/async/delay.ts";
  * import { Conveyor } from "https://deno.land/x/conveyor@0.2.0/mod.ts";
  *
@@ -48,7 +47,6 @@ import { BeltType } from "./types.ts";
  *
  * @example
  * ```ts
- * // Conveyor with context.
  * import { delay } from "https://deno.land/std@0.190.0/async/delay.ts";
  * import { Conveyor } from "https://deno.land/x/conveyor@0.2.0/mod.ts";
  *
