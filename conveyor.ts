@@ -13,7 +13,7 @@ import { BeltType } from "./types.ts";
  * @example
  * ```ts
  * import { delay } from "https://deno.land/std@0.190.0/async/delay.ts";
- * import { Conveyor } from "https://deno.land/x/conveyor@0.2.0/mod.ts";
+ * import { Conveyor } from "https://deno.land/x/conveyor@1.0.0/mod.ts";
  *
  * async function* gen123(): AsyncIterableIterator<number> {
  *   yield 1;
@@ -48,7 +48,7 @@ import { BeltType } from "./types.ts";
  * @example
  * ```ts
  * import { delay } from "https://deno.land/std@0.190.0/async/delay.ts";
- * import { Conveyor } from "https://deno.land/x/conveyor@0.2.0/mod.ts";
+ * import { Conveyor } from "https://deno.land/x/conveyor@1.0.0/mod.ts";
  *
  * async function* gen123(): AsyncIterableIterator<number> {
  *   yield 1;

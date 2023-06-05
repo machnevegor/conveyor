@@ -1,7 +1,6 @@
 ## Problem
 
-Consider the problem in terms of
-[abstraction](https://en.wikipedia.org/wiki/Abstraction).
+Consider the problem in terms of abstraction.
 
 Imagine you have a conveyor system that contains a handler, inlet and outlet
 transport belts. The handler processes inlet belt values one-by-one. Each of the
@@ -62,7 +61,7 @@ into a single stream. It's time to use this module!
 Import the Conveyor class and pass the handler into it.
 
 ```ts
-import { Conveyor } from "https://deno.land/x/conveyor@0.2.0/mod.ts";
+import { Conveyor } from "https://deno.land/x/conveyor@1.0.0/mod.ts";
 
 const conveyor = new Conveyor<number, number>(handler);
 ```
